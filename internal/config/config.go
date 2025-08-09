@@ -12,7 +12,7 @@ type Config struct {
 	Env         string     `yaml:"env" env-default:"local" env-required:"true"`
 	StoragePath string     `yaml:"storage_path" env-required:"true"`
 	HTTPServer  HTTPServer `yaml:"http_server"`
-	PosgreSQL   PosgreSQL  `yaml:"posgres"`
+	PosgreSQL   PosgreSQL  `yaml:"postgres"`
 }
 
 type HTTPServer struct {
@@ -22,7 +22,7 @@ type HTTPServer struct {
 }
 
 type PosgreSQL struct {
-	User     string `yaml:"name"`
+	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Name     string `yaml:"name"`
 }
