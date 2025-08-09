@@ -12,6 +12,7 @@ type Config struct {
 	Env         string     `yaml:"env" env-default:"local" env-required:"true"`
 	StoragePath string     `yaml:"storage_path" env-required:"true"`
 	HTTPServer  HTTPServer `yaml:"http_server"`
+	PosgreSQL   PosgreSQL  `yaml:"posgres"`
 }
 
 type HTTPServer struct {
@@ -20,9 +21,17 @@ type HTTPServer struct {
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
 }
 
-func Load() *Config{
+type PosgreSQL struct {
+	User     string `yaml:"name"`
+	Password string `yaml:"password"`
+	Name     string `yaml:"name"`
+}
+
+// TODO: postgress part for config
+
+func Load() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
-	if configPath == ""{
+	if configPath == "" {
 		log.Fatal("CONFIG_PARH is not set")
 	}
 
