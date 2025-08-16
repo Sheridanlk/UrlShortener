@@ -1,0 +1,19 @@
+template: testify
+packages:
+  UrlShortener/internal/http-server/handlers/url/save:
+    config:
+      dir: "{{.InterfaceDir}}/mocks"
+      filename: "mock_{{.InterfaceName}}.go"
+      pkgname: "mocks"
+      structname: "Mock{{.InterfaceName}}"
+    interfaces:
+      URLSaver:
+
+  UrlShortener/internal/http-server/handlers/redirect:
+    config:
+      dir: "{{.InterfaceDir}}/mocks"
+      filename: "mock_{{.InterfaceName}}.go"
+      pkgname: "mocks"
+      structname: "Mock{{.InterfaceName}}"
+    interfaces:
+      URLGetter:
