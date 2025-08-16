@@ -2,6 +2,7 @@ package main
 
 import (
 	"UrlShortener/internal/config"
+	"UrlShortener/internal/http-server/handlers/redirect"
 	"UrlShortener/internal/http-server/handlers/url/save"
 	"UrlShortener/internal/http-server/middleware/logger"
 	"UrlShortener/internal/logger/sl"
@@ -37,6 +38,7 @@ func main() {
 	router.Use(middleware.URLFormat)
 
 	router.Post("/url", save.New(log, storage))
+	router.Get("/{alias}", redirect.New(log, storage))
 
 	log.Info("starting server", slog.String("addres", cfg.HTTPServer.Address))
 
