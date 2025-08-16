@@ -6,6 +6,7 @@ import (
 	"UrlShortener/internal/logger/sl"
 	"UrlShortener/internal/storage"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
 
@@ -26,6 +27,7 @@ type Response struct {
 
 const aliasLength = 6
 
+//go:generate mockery
 type URLSaver interface {
 	SaveURL(urlToSave, alias string) (int64, error)
 }
@@ -42,6 +44,13 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		var req Request
 
 		err := render.DecodeJSON(r.Body, &req)
+		if errors.Is(err, io.EOF) {
+			log.Error("request body is empty")
+
+			render.JSON(w, r, response.Error("empty request"))
+
+			return
+		}
 		if err != nil {
 			log.Error("failed to decode request body", sl.Err(err))
 
@@ -72,6 +81,13 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 			log.Info("alias already exists", slog.String("url", req.URL))
 
 			render.JSON(w, r, response.Error("alias already exists"))
+
+			return
+		}
+		if err != nil {
+			log.Info("failed to add url ", slog.String("url", req.URL))
+
+			render.JSON(w, r, response.Error("failed to add url"))
 
 			return
 		}
