@@ -44,7 +44,6 @@ func main() {
 
 		r.Post("/", save.New(log, storage))
 	})
-
 	router.Get("/{alias}", redirect.New(log, storage))
 
 	log.Info("starting server", slog.String("addres", cfg.HTTPServer.Address))
