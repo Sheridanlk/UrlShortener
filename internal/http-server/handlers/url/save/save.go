@@ -47,6 +47,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		if errors.Is(err, io.EOF) {
 			log.Error("request body is empty")
 
+			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, response.Error("empty request"))
 
 			return
@@ -54,6 +55,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		if err != nil {
 			log.Error("failed to decode request body", sl.Err(err))
 
+			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, response.Error("failed to decode request"))
 
 			return
@@ -66,6 +68,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 
 			log.Error("invalid request", sl.Err(err))
 
+			w.WriteHeader(http.StatusBadRequest)
 			render.JSON(w, r, response.ValidationError(validateErr))
 
 			return
@@ -80,6 +83,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		if errors.Is(err, storage.ErrURLExists) {
 			log.Info("alias already exists", slog.String("url", req.URL))
 
+			w.WriteHeader(http.StatusConflict)
 			render.JSON(w, r, response.Error("alias already exists"))
 
 			return
@@ -87,6 +91,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		if err != nil {
 			log.Info("failed to add url ", slog.String("url", req.URL))
 
+			w.WriteHeader(http.StatusInternalServerError)
 			render.JSON(w, r, response.Error("failed to add url"))
 
 			return
@@ -94,9 +99,9 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 
 		log.Info("ulr added", slog.Int64("id", id))
 
+		w.WriteHeader(http.StatusOK)
 		render.JSON(w, r, Response{
-			Response: response.OK(),
-			Alias:    alias,
+			Alias: alias,
 		})
 	}
 }

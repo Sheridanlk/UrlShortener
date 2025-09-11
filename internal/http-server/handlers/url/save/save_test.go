@@ -17,40 +17,46 @@ import (
 
 func TestSaveHandler(t *testing.T) {
 	cases := []struct {
-		name      string
-		alias     string
-		url       string
-		respError string
-		mockError error
+		name         string
+		alias        string
+		url          string
+		expectedCode int
+		respError    string
+		mockError    error
 	}{
 		{
-			name:  "Success",
-			alias: "test_alias",
-			url:   "https://google.com",
+			name:         "Success",
+			alias:        "test_alias",
+			url:          "https://google.com",
+			expectedCode: http.StatusOK,
 		},
 		{
-			name:  "Empty alias",
-			alias: "",
-			url:   "https://google.com",
+			name:         "Empty alias",
+			alias:        "",
+			url:          "https://google.com",
+			expectedCode: http.StatusOK,
 		},
 		{
-			name:      "Empty URL",
-			url:       "",
-			alias:     "some_alias",
-			respError: "field URL is a required field",
+			name:         "Empty URL",
+			url:          "",
+			alias:        "some_alias",
+			expectedCode: http.StatusBadRequest,
+			respError:    "field URL is a required field",
 		},
 		{
-			name:      "Invalid URL",
-			url:       "some invalid URL",
-			alias:     "some_alias",
-			respError: "field URL is not a valid URL",
+			name:         "Invalid URL",
+			url:          "some invalid URL",
+			alias:        "some_alias",
+			expectedCode: http.StatusBadRequest,
+			respError:    "field URL is not a valid URL",
 		},
 		{
-			name:      "SaveURL Error",
-			alias:     "test_alias",
-			url:       "https://google.com",
-			respError: "failed to add url",
-			mockError: errors.New("unexpected error"),
+			name:         "SaveURL Error",
+			alias:        "test_alias",
+			url:          "https://google.com",
+			expectedCode: http.StatusInternalServerError,
+			respError:    "failed to add url",
+			mockError:    errors.New("unexpected error"),
 		},
 	}
 
@@ -78,7 +84,7 @@ func TestSaveHandler(t *testing.T) {
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)
 
-			require.Equal(t, rr.Code, http.StatusOK)
+			require.Equal(t, rr.Code, tc.expectedCode)
 
 			body := rr.Body.String()
 
@@ -88,8 +94,6 @@ func TestSaveHandler(t *testing.T) {
 
 			require.Equal(t, tc.respError, resp.Error)
 
-			// TODO: add more checks
-			// TODO: add url method check and add status in header
 		})
 	}
 }

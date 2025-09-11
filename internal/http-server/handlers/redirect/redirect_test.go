@@ -42,8 +42,6 @@ func TestSaveHandler(t *testing.T) {
 			ts := httptest.NewServer(r)
 			defer ts.Close()
 
-			// TODO: написать функцию get redirect
-
 			redirectedToURL, err := api.GetRedirect(ts.URL + "/" + tc.alias)
 			require.NoError(t, err)
 
