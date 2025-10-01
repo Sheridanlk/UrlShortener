@@ -9,9 +9,11 @@ import (
 )
 
 type Config struct {
-	Env        string     `yaml:"env" env-default:"local" env-required:"true"`
-	HTTPServer HTTPServer `yaml:"http_server"`
-	PosgreSQL  PosgreSQL  `yaml:"postgres"`
+	Env        string        `yaml:"env" env-default:"local" env-required:"true"`
+	HTTPServer HTTPServer    `yaml:"http_server"`
+	PosgreSQL  PosgreSQL     `yaml:"postgres"`
+	Clients    ClientsConfig `yaml:"clients"`
+	AppSecret  string        `yaml:"app_secret" env-required:"true" env"APP_SECRET"`
 }
 
 type HTTPServer struct {
@@ -26,6 +28,17 @@ type PosgreSQL struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Name     string `yaml:"name"`
+}
+
+type Client struct {
+	Addres       string        `yaml:"address"`
+	Timeout      time.Duration `yaml:"timeout"`
+	RetriesCount int           `yaml:"retries_count"`
+	// Insecure     bool          `yaml:"insecure"`
+}
+
+type ClientsConfig struct {
+	SSO Client `yaml:"sso"`
 }
 
 // TODO: postgress part for config
