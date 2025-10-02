@@ -78,7 +78,7 @@ func New(log *slog.Logger, registerService RegisterService) http.HandlerFunc {
 				log.Info("user is alredy exists", slog.String("email", req.Email))
 
 				w.WriteHeader(http.StatusConflict)
-				render.JSON(w, r, response.Error("user already exists"))
+				render.JSON(w, r, response.Error("user is already exists"))
 
 				return
 			}
