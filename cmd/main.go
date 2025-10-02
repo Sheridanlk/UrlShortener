@@ -3,6 +3,8 @@ package main
 import (
 	ssogrpc "UrlShortener/internal/clients/sso/grpc"
 	"UrlShortener/internal/config"
+	"UrlShortener/internal/http-server/handlers/auth/login"
+	"UrlShortener/internal/http-server/handlers/auth/register"
 	"UrlShortener/internal/http-server/handlers/redirect"
 	"UrlShortener/internal/http-server/handlers/url/save"
 	"UrlShortener/internal/http-server/middleware/logger"
@@ -37,8 +39,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	ssoClient.IsAdmin(context.Background(), 1)
-
 	storage, err := postgresql.Init(cfg.PosgreSQL.User, cfg.PosgreSQL.Password, cfg.PosgreSQL.Name)
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
@@ -48,18 +48,22 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
-	router.Use(middleware.Logger)
 	router.Use(logger.New(log))
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Route("/url", func(r chi.Router) {
-		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
-			cfg.HTTPServer.User: cfg.HTTPServer.Password,
-		}))
+	router.Post("/auth/register", register.New(log, ssoClient))
+	router.Post("/auth/login", login.New(log, ssoClient))
+	// router.Route("/url", func(r chi.Router) {
+	// 	r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+	// 		cfg.HTTPServer.User: cfg.HTTPServer.Password,
+	// 	}))
 
-		r.Post("/", save.New(log, storage))
-	})
+	// 	r.Post("/", save.New(log, storage))
+	// })
+
+	router.Post("/url", save.New(log, storage))
+
 	router.Get("/{alias}", redirect.New(log, storage))
 
 	log.Info("starting server", slog.String("addres", cfg.HTTPServer.Address))
