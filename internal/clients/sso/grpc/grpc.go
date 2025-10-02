@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"log/slog"
@@ -13,6 +14,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
+)
+
+var (
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrInvalidAppID       = errors.New("invalid app id")
+	ErrUserExists         = errors.New("user already exists")
+	ErrUserNotFound       = errors.New("user not found")
 )
 
 type Client struct {
@@ -64,6 +73,13 @@ func (c *Client) IsAdmin(ctx context.Context, userID int64) (bool, error) {
 		UserId: userID,
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				return false, fmt.Errorf("%s: %w", op, ErrInvalidCredentials)
+			}
+		}
 		return false, fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -79,6 +95,13 @@ func (c *Client) Login(ctx context.Context, email string, password string, appID
 		AppId:    appID,
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			switch st.Code() {
+			case codes.NotFound:
+				return "", fmt.Errorf("%s: %w", op, ErrUserNotFound)
+			}
+		}
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 	return resp.Token, nil
@@ -92,6 +115,13 @@ func (c *Client) Regiser(ctx context.Context, email string, password string) (in
 		Password: password,
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			switch st.Code() {
+			case codes.AlreadyExists:
+				return 0, fmt.Errorf("%s: %w", op, ErrUserExists)
+			}
+		}
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 	return resp.UserId, nil
