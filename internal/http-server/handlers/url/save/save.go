@@ -2,6 +2,7 @@ package save
 
 import (
 	"UrlShortener/internal/lib/api/response"
+	"UrlShortener/internal/lib/authctx"
 	"UrlShortener/internal/lib/random"
 	"UrlShortener/internal/logger/sl"
 	"UrlShortener/internal/storage"
@@ -29,7 +30,7 @@ const aliasLength = 6
 
 //go:generate mockery
 type URLSaver interface {
-	SaveURL(urlToSave, alias string) (int64, error)
+	SaveURL(urlToSave, alias string, userID int64) (int64, error)
 }
 
 func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
@@ -40,6 +41,8 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 			slog.String("op", op),
 			slog.String("request_id", middleware.GetReqID(r.Context())),
 		)
+
+		UserIdnCtx := r.Context().Value(authctx.UserIDKey).(int64)
 
 		var req Request
 
@@ -79,7 +82,7 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 			alias = random.NewRandomAlias(aliasLength)
 		}
 
-		id, err := urlSaver.SaveURL(req.URL, alias)
+		id, err := urlSaver.SaveURL(req.URL, alias, UserIdnCtx)
 		if errors.Is(err, storage.ErrURLExists) {
 			log.Info("alias already exists", slog.String("url", req.URL))
 

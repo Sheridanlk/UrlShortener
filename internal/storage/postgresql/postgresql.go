@@ -31,16 +31,16 @@ func Init(user, password, dbname string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) SaveURL(urlToSave, alias string) (int64, error) {
+func (s *Storage) SaveURL(urlToSave, alias string, userID int64) (int64, error) {
 	const op = "storage.postgresql.SaveURL"
 
-	stmt, err := s.db.Prepare("INSERT INTO url(url, alias) VALUES($1, $2) RETURNING id")
+	stmt, err := s.db.Prepare("INSERT INTO url(url, alias, user_id) VALUES($1, $2, $3) RETURNING id")
 	if err != nil {
 		return 0, fmt.Errorf("%s: cant't prepare saving: %w", op, err)
 	}
 
 	var id int64
-	err = stmt.QueryRow(urlToSave, alias).Scan(&id)
+	err = stmt.QueryRow(urlToSave, alias, userID).Scan(&id)
 	if err != nil {
 		if postgresErr, ok := err.(*pq.Error); ok && postgresErr.Code == "23505" {
 			return 0, fmt.Errorf("cant't save url: %w", storage.ErrURLExists)

@@ -2,6 +2,7 @@ package JWTAuth
 
 import (
 	"UrlShortener/internal/config"
+	"UrlShortener/internal/lib/authctx"
 	"UrlShortener/internal/logger/sl"
 	"context"
 	"log/slog"
@@ -47,7 +48,7 @@ func New(log *slog.Logger, cfg config.Config) func(http.Handler) http.Handler {
 			}
 
 			uid := int64(claims["uid"].(float64))
-			ctx := context.WithValue(r.Context(), "uID", uid)
+			ctx := context.WithValue(r.Context(), authctx.UserIDKey, uid)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

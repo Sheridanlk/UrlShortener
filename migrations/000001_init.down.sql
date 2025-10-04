@@ -1,3 +1,3 @@
-DROP TABLE url:
+DROP TABLE url;
 
-DROP INDEX idx_alias:
+DROP INDEX idx_alias;
