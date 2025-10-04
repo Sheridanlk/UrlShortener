@@ -38,14 +38,12 @@ func New(
 ) (*Client, error) {
 	const op = "grpc.New"
 
-	// интерцептор ретраев
 	retryOpts := []grpcretry.CallOption{
 		grpcretry.WithCodes(codes.NotFound, codes.Aborted, codes.DeadlineExceeded),
 		grpcretry.WithMax(uint(retriesCount)),
 		grpcretry.WithPerRetryTimeout(timeout),
 	}
 
-	// интерцептор логирования
 	logOpts := []grpclog.Option{
 		grpclog.WithLogOnEvents(grpclog.PayloadReceived, grpclog.PayloadSent),
 	}

@@ -39,8 +39,6 @@ type ClientsConfig struct {
 	SSO Client `yaml:"sso"`
 }
 
-// TODO: postgress part for config
-
 func Load() *Config {
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
