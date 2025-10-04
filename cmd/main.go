@@ -7,6 +7,7 @@ import (
 	"UrlShortener/internal/http-server/handlers/auth/register"
 	"UrlShortener/internal/http-server/handlers/redirect"
 	"UrlShortener/internal/http-server/handlers/url/save"
+	"UrlShortener/internal/http-server/middleware/JWTAuth"
 	"UrlShortener/internal/http-server/middleware/logger"
 	"UrlShortener/internal/logger/sl"
 	"UrlShortener/internal/storage/postgresql"
@@ -54,15 +55,13 @@ func main() {
 
 	router.Post("/auth/register", register.New(log, ssoClient))
 	router.Post("/auth/login", login.New(log, ssoClient))
-	// router.Route("/url", func(r chi.Router) {
-	// 	r.Use(middleware.BasicAuth("url-shortener", map[string]string{
-	// 		cfg.HTTPServer.User: cfg.HTTPServer.Password,
-	// 	}))
 
-	// 	r.Post("/", save.New(log, storage))
-	// })
+	router.Route("/url", func(r chi.Router) {
+		r.Use(JWTAuth.New(log, *cfg))
 
-	router.Post("/url", save.New(log, storage))
+		r.Post("/create", save.New(log, storage))
+
+	})
 
 	router.Get("/{alias}", redirect.New(log, storage))
 
