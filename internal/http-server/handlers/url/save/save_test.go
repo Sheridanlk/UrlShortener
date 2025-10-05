@@ -2,8 +2,10 @@ package save
 
 import (
 	"UrlShortener/internal/http-server/handlers/url/save/mocks"
+	"UrlShortener/internal/lib/authctx"
 	"UrlShortener/internal/logger/sl"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,6 +15,10 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+)
+
+var (
+	test_userID = int64(123)
 )
 
 func TestSaveHandler(t *testing.T) {
@@ -69,7 +75,7 @@ func TestSaveHandler(t *testing.T) {
 			urlSaverMock := mocks.NewMockURLSaver(t)
 
 			if tc.respError == "" || tc.mockError != nil {
-				urlSaverMock.On("SaveURL", tc.url, mock.AnythingOfType("string")).
+				urlSaverMock.On("SaveURL", tc.url, mock.AnythingOfType("string"), mock.AnythingOfType("int64")).
 					Return(int64(1), tc.mockError).
 					Once()
 			}
@@ -78,8 +84,11 @@ func TestSaveHandler(t *testing.T) {
 
 			input := fmt.Sprintf(`{"url": "%s", "alias": "%s"}`, tc.url, tc.alias)
 
-			req, err := http.NewRequest(http.MethodPost, "/save", bytes.NewReader([]byte(input)))
+			req, err := http.NewRequest(http.MethodPost, "/create", bytes.NewReader([]byte(input)))
 			require.NoError(t, err)
+
+			ctx := context.WithValue(req.Context(), authctx.UserIDKey, test_userID)
+			req = req.WithContext(ctx)
 
 			rr := httptest.NewRecorder()
 			handler.ServeHTTP(rr, req)

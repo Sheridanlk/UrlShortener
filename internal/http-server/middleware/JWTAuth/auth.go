@@ -1,7 +1,6 @@
 package JWTAuth
 
 import (
-	"UrlShortener/internal/config"
 	"UrlShortener/internal/lib/authctx"
 	"UrlShortener/internal/logger/sl"
 	"context"
@@ -12,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func New(log *slog.Logger, cfg config.Config) func(http.Handler) http.Handler {
+func New(log *slog.Logger, secret string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log := log.With(
@@ -30,7 +29,7 @@ func New(log *slog.Logger, cfg config.Config) func(http.Handler) http.Handler {
 
 			tokenStr := strings.TrimPrefix(ah, "Bearer ")
 			tokenParsed, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-				return []byte(cfg.AppSecret), nil
+				return []byte(secret), nil
 			})
 			if err != nil {
 				log.Error("unable to parse the token", sl.Err(err))

@@ -3,21 +3,15 @@ package main
 import (
 	ssogrpc "UrlShortener/internal/clients/sso/grpc"
 	"UrlShortener/internal/config"
-	"UrlShortener/internal/http-server/handlers/auth/login"
-	"UrlShortener/internal/http-server/handlers/auth/register"
-	"UrlShortener/internal/http-server/handlers/redirect"
-	"UrlShortener/internal/http-server/handlers/url/save"
-	"UrlShortener/internal/http-server/middleware/JWTAuth"
-	"UrlShortener/internal/http-server/middleware/logger"
+	chirouter "UrlShortener/internal/http-server/router/chi-router"
+	"UrlShortener/internal/http-server/server"
 	"UrlShortener/internal/logger/sl"
 	"UrlShortener/internal/storage/postgresql"
 	"context"
 	"log/slog"
-	"net/http"
 	"os"
-
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -46,38 +40,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	router := chi.NewRouter()
+	router := chirouter.Setup(log, storage, ssoClient, cfg.AppSecret)
 
-	router.Use(middleware.RequestID)
-	router.Use(logger.New(log))
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.URLFormat)
+	srv := server.New(log, router, cfg.HTTPServer.Address, cfg.HTTPServer.Timeout, cfg.HTTPServer.Timeout, cfg.HTTPServer.IdleTimeout)
 
-	router.Post("/auth/register", register.New(log, ssoClient))
-	router.Post("/auth/login", login.New(log, ssoClient))
+	go srv.Run()
 
-	router.Route("/url", func(r chi.Router) {
-		r.Use(JWTAuth.New(log, *cfg))
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
-		r.Post("/create", save.New(log, storage))
+	<-stop
 
-	})
+	srv.Stop()
 
-	router.Get("/{alias}", redirect.New(log, storage))
-
-	log.Info("starting server", slog.String("addres", cfg.HTTPServer.Address))
-
-	srv := &http.Server{
-		Addr:         cfg.HTTPServer.Address,
-		Handler:      router,
-		ReadTimeout:  cfg.HTTPServer.Timeout,
-		WriteTimeout: cfg.HTTPServer.Timeout,
-		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
-	}
-
-	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
-	}
-
-	log.Error("server stopped")
+	log.Info("url-shortener stopped")
 }
