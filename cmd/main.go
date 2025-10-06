@@ -52,6 +52,7 @@ func main() {
 	<-stop
 
 	srv.Stop()
+	storage.Close()
 
 	log.Info("url-shortener stopped")
 }

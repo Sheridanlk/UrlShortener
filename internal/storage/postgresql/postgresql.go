@@ -31,6 +31,12 @@ func Init(user, password, dbname string) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
+func (s *Storage) Close() {
+	const op = "storage.postgresql.Close"
+
+	s.db.Close()
+}
+
 func (s *Storage) SaveURL(urlToSave, alias string, userID int64) (int64, error) {
 	const op = "storage.postgresql.SaveURL"
 
