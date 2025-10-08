@@ -17,8 +17,8 @@ import (
 
 type Request struct {
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password"`
-	AppID    int32  `json:"app_id"`
+	Password string `json:"password" validate:"required"`
+	AppID    int32  `json:"app_id" validate:"required"`
 }
 
 type Response struct {
