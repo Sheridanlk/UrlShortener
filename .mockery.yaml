@@ -17,3 +17,21 @@ packages:
       structname: "Mock{{.InterfaceName}}"
     interfaces:
       URLGetter:
+
+  UrlShortener/internal/http-server/handlers/auth/login:
+    config:
+      dir: "{{.InterfaceDir}}/mocks"
+      filename: "mock_{{.InterfaceName}}.go"
+      pkgname: "mocks"
+      structname: "Mock{{.InterfaceName}}"
+    interfaces:
+      LoginService:
+
+  UrlShortener/internal/http-server/handlers/auth/register:
+    config:
+      dir: "{{.InterfaceDir}}/mocks"
+      filename: "mock_{{.InterfaceName}}.go"
+      pkgname: "mocks"
+      structname: "Mock{{.InterfaceName}}"
+    interfaces:
+      RegisterService:
