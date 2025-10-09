@@ -26,7 +26,7 @@ type Response struct {
 }
 
 type RegisterService interface {
-	Regiser(ctx context.Context, email string, password string) (int64, error)
+	Register(ctx context.Context, email string, password string) (int64, error)
 }
 
 func New(log *slog.Logger, registerService RegisterService) http.HandlerFunc {
@@ -71,7 +71,7 @@ func New(log *slog.Logger, registerService RegisterService) http.HandlerFunc {
 			return
 		}
 
-		user_id, err := registerService.Regiser(context.Background(), req.Email, req.Password)
+		user_id, err := registerService.Register(context.Background(), req.Email, req.Password)
 
 		if err != nil {
 			if errors.Is(err, grpc.ErrUserExists) {

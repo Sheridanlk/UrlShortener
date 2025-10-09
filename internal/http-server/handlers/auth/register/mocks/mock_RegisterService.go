@@ -37,12 +37,12 @@ func (_m *MockRegisterService) EXPECT() *MockRegisterService_Expecter {
 	return &MockRegisterService_Expecter{mock: &_m.Mock}
 }
 
-// Regiser provides a mock function for the type MockRegisterService
-func (_mock *MockRegisterService) Regiser(ctx context.Context, email string, password string) (int64, error) {
+// Register provides a mock function for the type MockRegisterService
+func (_mock *MockRegisterService) Register(ctx context.Context, email string, password string) (int64, error) {
 	ret := _mock.Called(ctx, email, password)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Regiser")
+		panic("no return value specified for Register")
 	}
 
 	var r0 int64
@@ -63,20 +63,20 @@ func (_mock *MockRegisterService) Regiser(ctx context.Context, email string, pas
 	return r0, r1
 }
 
-// MockRegisterService_Regiser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Regiser'
-type MockRegisterService_Regiser_Call struct {
+// MockRegisterService_Register_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Register'
+type MockRegisterService_Register_Call struct {
 	*mock.Call
 }
 
-// Regiser is a helper method to define mock.On call
+// Register is a helper method to define mock.On call
 //   - ctx context.Context
 //   - email string
 //   - password string
-func (_e *MockRegisterService_Expecter) Regiser(ctx interface{}, email interface{}, password interface{}) *MockRegisterService_Regiser_Call {
-	return &MockRegisterService_Regiser_Call{Call: _e.mock.On("Regiser", ctx, email, password)}
+func (_e *MockRegisterService_Expecter) Register(ctx interface{}, email interface{}, password interface{}) *MockRegisterService_Register_Call {
+	return &MockRegisterService_Register_Call{Call: _e.mock.On("Register", ctx, email, password)}
 }
 
-func (_c *MockRegisterService_Regiser_Call) Run(run func(ctx context.Context, email string, password string)) *MockRegisterService_Regiser_Call {
+func (_c *MockRegisterService_Register_Call) Run(run func(ctx context.Context, email string, password string)) *MockRegisterService_Register_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
@@ -99,12 +99,12 @@ func (_c *MockRegisterService_Regiser_Call) Run(run func(ctx context.Context, em
 	return _c
 }
 
-func (_c *MockRegisterService_Regiser_Call) Return(n int64, err error) *MockRegisterService_Regiser_Call {
+func (_c *MockRegisterService_Register_Call) Return(n int64, err error) *MockRegisterService_Register_Call {
 	_c.Call.Return(n, err)
 	return _c
 }
 
-func (_c *MockRegisterService_Regiser_Call) RunAndReturn(run func(ctx context.Context, email string, password string) (int64, error)) *MockRegisterService_Regiser_Call {
+func (_c *MockRegisterService_Register_Call) RunAndReturn(run func(ctx context.Context, email string, password string) (int64, error)) *MockRegisterService_Register_Call {
 	_c.Call.Return(run)
 	return _c
 }
