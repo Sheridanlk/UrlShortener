@@ -37,7 +37,7 @@ func TestLoginHandler(t *testing.T) {
 		mockError    error
 	}{
 		{
-			name:         "Sucsess",
+			name:         "Success",
 			email:        email,
 			password:     password,
 			appID:        appID,
