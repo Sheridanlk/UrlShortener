@@ -34,7 +34,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	storage, err := postgresql.Init(cfg.PosgreSQL.User, cfg.PosgreSQL.Password, cfg.PosgreSQL.Name, cfg.PosgreSQL.Port)
+	storage, err := postgresql.Init(cfg.PosgreSQL.User, cfg.PosgreSQL.Password, cfg.PosgreSQL.Name, cfg.PosgreSQL.Host, cfg.PosgreSQL.Port)
 	if err != nil {
 		log.Error("failed to init storage", sl.Err(err))
 		os.Exit(1)

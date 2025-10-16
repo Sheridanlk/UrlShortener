@@ -15,10 +15,10 @@ type Storage struct {
 	QueryTimeout time.Duration
 }
 
-func Init(user string, password string, dbname string, port int) (*Storage, error) {
+func Init(user string, password string, dbname string, host string, port int) (*Storage, error) {
 	const op = "storage.postgresql.Init"
 
-	connStr := fmt.Sprintf("user=%s password=%s dbname=%s port=%v sslmode=disable", user, password, dbname, port)
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable", user, password, dbname, host, port)
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, fmt.Errorf("%s: can't connect to database: %w", op, err)
