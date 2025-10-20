@@ -1,15 +1,14 @@
 services:
-  db:
+  shortener-db:
     image: postgres:15-alpine
-    container_name: urls_db
     environment:
-      POSTGRES_HOST: db
+      POSTGRES_HOST: shortener-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shortener
       POSTGRES_PORT: 5432
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - urls_pg:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
@@ -20,36 +19,33 @@ services:
   migrate:
     image: migrate/migrate:4
     depends_on:
-      db:
+      shortener-db:
         condition: service_healthy
     networks: [docker_net]
     volumes:
       - ./migrations:/migrations:ro
     command: [
       "-path", "/migrations",
-      "-database", "postgres://postgres:postgres@db:5432/shortener?sslmode=disable",
+      "-database", "postgres://postgres:postgres@shortener-db:5432/shortener?sslmode=disable",
       "up"
     ]
-    # мигратор должен завершиться и выйти (не висеть)
     restart: "no"
 
   shortener:
     build: .
     depends_on:
-      db:
+      shortener-db:
         condition: service_healthy
     container_name: url_shortener
     environment:
-      APP_SECRET: test_secret
+      APP_SECRET: shortener-secret
       CONFIG_PATH: /app/config.yaml
     ports:
       - "8080:8080"
-
-
     networks: [docker_net]
 
 volumes:
-  pgdata:
+  urls_pg:
 
 networks:
   docker_net:
