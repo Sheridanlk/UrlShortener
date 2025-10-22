@@ -16,7 +16,7 @@ services:
       retries: 5
     networks: [docker_net]
 
-  migrate:
+  shortener-migrate:
     image: migrate/migrate:4
     depends_on:
       shortener-db:
@@ -39,7 +39,9 @@ services:
     container_name: url_shortener
     environment:
       APP_SECRET: shortener-secret
-      CONFIG_PATH: /app/config.yaml
+      CONFIG_PATH: /config/config.yaml
+    volumes:
+      - ./config:/config:ro
     ports:
       - "8080:8080"
     networks: [docker_net]
