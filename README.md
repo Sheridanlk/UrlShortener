@@ -85,7 +85,7 @@ clients:
     timeout: 10s
     retries_count: 5
 ```
-(для локального запуска без Docker: поставь host: localhost и реальный порт/БД)
+(Для локального запуска без Docker: поставить host: localhost и реальный порт/БД)
 
 ### 4.2. Старт
 A) Локально(Go):
@@ -104,13 +104,13 @@ make create-migration NAME=<имя_миграции>
 ```
 #### Поднять через конейнер 
 ```
-migrate-up-docker    # применить все
-migrate-down-docker  # откатить одну
+make migrate-up-docker    # применить все
+make migrate-down-docker  # откатить одну
 ```
 #### Локально(поменять путь для подключения к бд на свой)
 ```
-migrate-up-local    # применить все
-migrate-down-local  # откатить одну
+make migrate-up-local    # применить все
+make migrate-down-local  # откатить одну
 ```
 
 
