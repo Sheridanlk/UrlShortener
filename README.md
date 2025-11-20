@@ -46,7 +46,7 @@ UrlShortener/
 │ ├── storage/
 │ │ └── postgresql/      # Работа с PostgreSQL
 │ ├── http-server/
-│ │ ├── router.go        # Инициализация chi, регистрация маршрутов и middleware
+│ │ ├── router/        # Инициализация chi, регистрация маршрутов и middleware
 │ │ ├── middleware/
 │ │ │ ├── jwt/           # JWTAuth: парсинг Bearer, проверки, user_id в context
 │ │ │ └── logger/        # HTTP access-логгер, requestID, recover и пр.
